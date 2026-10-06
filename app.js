@@ -70,14 +70,27 @@ function renderInventory() {
 }
 
 function renderProductOptions() {
-  $("move-product").innerHTML = state.products
+  const options = state.products
     .map((p) => `<option value="${escape(p.sku)}">${escape(p.sku)} — ${escape(p.name)}</option>`)
     .join("");
+  $("move-product").innerHTML = options;
+
+  // Keep the selected history filter after re-rendering
+  const current = $("history-product").value;
+  $("history-product").innerHTML = `<option value="">All products</option>${options}`;
+  $("history-product").value = state.products.some((p) => p.sku === current) ? current : "";
+}
+
+function filteredHistory() {
+  const sku = $("history-product").value;
+  const type = $("history-type").value;
+  return state.history.filter((h) => (!sku || h.sku === sku) && (!type || h.type === type));
 }
 
 function renderHistory() {
-  $("history").innerHTML = state.history.length
-    ? state.history.slice().reverse().map((h) => `
+  const items = filteredHistory();
+  $("history").innerHTML = items.length
+    ? items.slice().reverse().map((h) => `
         <li>
           <span class="${h.type}">${h.type === "in" ? "+" : "−"}${h.qty} · ${escape(h.sku)}</span>
           <time>${new Date(h.date).toLocaleString()}</time>
@@ -178,9 +191,11 @@ $("inventory").addEventListener("click", (e) => {
 });
 
 $("search").addEventListener("input", renderInventory);
+$("history-product").addEventListener("change", renderHistory);
+$("history-type").addEventListener("change", renderHistory);
 
 $("export").addEventListener("click", () => {
-  const lines = [["date", "sku", "type", "quantity"], ...state.history.map((h) => [h.date, h.sku, h.type, h.qty])];
+  const lines = [["date", "sku", "type", "quantity"], ...filteredHistory().map((h) => [h.date, h.sku, h.type, h.qty])];
   const csv = lines.map((l) => l.join(",")).join("\n");
   const link = document.createElement("a");
   link.href = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));

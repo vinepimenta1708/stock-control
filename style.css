@@ -44,6 +44,7 @@ body {
 .panel h2 { margin: 0 0 14px; font-size: 1.1rem; }
 .panel-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
 .panel-head h2 { margin: 0; }
+.filters { display: flex; gap: 8px; flex-wrap: wrap; }
 
 form label { display: grid; gap: 4px; margin-bottom: 12px; font-size: .9rem; color: var(--muted); }
 input, select {

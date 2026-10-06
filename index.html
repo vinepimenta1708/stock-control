@@ -64,7 +64,15 @@
     <section class="panel">
       <div class="panel-head">
         <h2>Movement history</h2>
-        <button id="export" class="secondary">Export CSV</button>
+        <div class="filters">
+          <select id="history-product" aria-label="Filter by product"></select>
+          <select id="history-type" aria-label="Filter by type">
+            <option value="">All types</option>
+            <option value="in">Entries</option>
+            <option value="out">Exits</option>
+          </select>
+          <button id="export" class="secondary">Export CSV</button>
+        </div>
       </div>
       <ul id="history" class="history"></ul>
     </section>
