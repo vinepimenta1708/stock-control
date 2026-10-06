@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Stock Control | Mini ERP</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <h1>📦 Stock Control</h1>
+    <span class="subtitle">A mini ERP inventory module</span>
+  </header>
+
+  <main class="container">
+    <section class="cards">
+      <div class="card"><span>Products</span><strong id="kpi-products">0</strong></div>
+      <div class="card"><span>Items in stock</span><strong id="kpi-items">0</strong></div>
+      <div class="card"><span>Stock value</span><strong id="kpi-value">$0.00</strong></div>
+      <div class="card alert"><span>Low stock</span><strong id="kpi-low">0</strong></div>
+    </section>
+
+    <section class="grid">
+      <form id="product-form" class="panel">
+        <h2>New product</h2>
+        <label>SKU <input id="sku" required placeholder="e.g. PRD-001" /></label>
+        <label>Name <input id="name" required placeholder="Product name" /></label>
+        <label>Unit price <input id="price" type="number" min="0" step="0.01" required /></label>
+        <label>Minimum stock <input id="min" type="number" min="0" value="5" required /></label>
+        <button type="submit">Add product</button>
+      </form>
+
+      <form id="move-form" class="panel">
+        <h2>Stock movement</h2>
+        <label>Product <select id="move-product" required></select></label>
+        <label>Type
+          <select id="move-type">
+            <option value="in">Entry (+)</option>
+            <option value="out">Exit (−)</option>
+          </select>
+        </label>
+        <label>Quantity <input id="move-qty" type="number" min="1" value="1" required /></label>
+        <button type="submit">Register movement</button>
+        <p id="move-msg" class="msg"></p>
+      </form>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <h2>Inventory</h2>
+        <input id="search" placeholder="Search by SKU or name…" />
+      </div>
+      <table>
+        <thead>
+          <tr><th>SKU</th><th>Name</th><th>Price</th><th>Qty</th><th>Min</th><th>Status</th><th></th></tr>
+        </thead>
+        <tbody id="inventory"></tbody>
+      </table>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <h2>Movement history</h2>
+        <button id="export" class="secondary">Export CSV</button>
+      </div>
+      <ul id="history" class="history"></ul>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
