@@ -3,7 +3,7 @@
 
 const STORAGE_KEY = "stock-control-data";
 
-const state = loadState();
+let state = loadState();
 let editingSku = null; // SKU of the product being edited (null = creating)
 
 function loadState() {
@@ -11,7 +11,11 @@ function loadState() {
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
     if (saved) return saved;
   } catch (e) { /* ignore */ }
-  // Sample data so the app isn't empty on first visit
+  return sampleData();
+}
+
+// Sample data so the app isn't empty on first visit
+function sampleData() {
   return {
     products: [
       { sku: "PRD-001", name: "Wireless Mouse", price: 25.9, qty: 18, min: 5 },
@@ -220,6 +224,15 @@ $("export").addEventListener("click", () => {
   link.href = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
   link.download = "stock-movements.csv";
   link.click();
+});
+
+$("reset").addEventListener("click", () => {
+  if (!confirm("Restore the sample data? All your products and movements will be lost.")) return;
+  state = sampleData();
+  saveState();
+  resetProductForm();
+  $("move-msg").textContent = "";
+  render();
 });
 
 render();

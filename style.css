@@ -67,6 +67,7 @@ button {
 }
 button:hover { filter: brightness(1.08); }
 button.secondary { background: #fff; color: var(--primary); border: 1px solid var(--primary); }
+button.ghost { margin-left: auto; background: transparent; border: 1px solid rgba(255,255,255,.6); padding: 6px 12px; font-size: .85rem; }
 button.link { background: none; color: var(--danger); padding: 4px 6px; }
 button.link.edit { color: var(--primary); }
 .actions { white-space: nowrap; }
