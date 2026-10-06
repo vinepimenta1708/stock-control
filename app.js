@@ -34,6 +34,7 @@ function render() {
   renderInventory();
   renderProductOptions();
   renderHistory();
+  renderChart();
 }
 
 function renderKpis() {
@@ -79,6 +80,24 @@ function renderProductOptions() {
   const current = $("history-product").value;
   $("history-product").innerHTML = `<option value="">All products</option>${options}`;
   $("history-product").value = state.products.some((p) => p.sku === current) ? current : "";
+}
+
+// Horizontal bar chart: current quantity per product, with a marker at the minimum stock
+function renderChart() {
+  const max = Math.max(1, ...state.products.map((p) => Math.max(p.qty, p.min)));
+  $("chart").innerHTML = state.products.length
+    ? state.products.map((p) => {
+        const low = p.qty <= p.min;
+        return `<div class="bar-row" title="${escape(p.name)}: ${p.qty} (min ${p.min})">
+          <span class="bar-label">${escape(p.name)}</span>
+          <div class="bar-track">
+            <div class="bar-fill ${low ? "low" : ""}" style="width:${(p.qty / max) * 100}%"></div>
+            <div class="bar-min" style="left:${(p.min / max) * 100}%"></div>
+          </div>
+          <span class="bar-value">${p.qty}</span>
+        </div>`;
+      }).join("")
+    : `<p class="empty">Add products to see the chart.</p>`;
 }
 
 function filteredHistory() {

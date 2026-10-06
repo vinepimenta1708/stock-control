@@ -92,3 +92,20 @@ th { color: var(--muted); font-weight: 600; }
 .history .out { color: var(--danger); }
 .history time { color: var(--muted); font-size: .8rem; }
 .empty { color: var(--muted); text-align: center; padding: 16px; }
+
+.chart { display: grid; gap: 10px; }
+.bar-row { display: grid; grid-template-columns: 160px 1fr 48px; align-items: center; gap: 10px; font-size: .85rem; }
+.bar-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bar-track { position: relative; height: 14px; background: var(--bg); border-radius: 999px; }
+.bar-fill { height: 100%; border-radius: 999px; background: var(--ok); transition: width .3s; }
+.bar-fill.low { background: var(--danger); }
+.bar-min { position: absolute; top: -3px; bottom: -3px; width: 2px; background: var(--text); opacity: .5; }
+.bar-value { text-align: right; font-variant-numeric: tabular-nums; }
+.legend { color: var(--muted); font-size: .8rem; display: flex; align-items: center; gap: 6px; }
+.dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-left: 8px; }
+.dot.ok { background: var(--ok); }
+.dot.low { background: var(--danger); }
+
+@media (max-width: 520px) {
+  .bar-row { grid-template-columns: 90px 1fr 40px; }
+}
