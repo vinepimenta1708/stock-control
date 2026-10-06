@@ -22,12 +22,15 @@
 
     <section class="grid">
       <form id="product-form" class="panel">
-        <h2>New product</h2>
+        <h2 id="form-title">New product</h2>
         <label>SKU <input id="sku" required placeholder="e.g. PRD-001" /></label>
         <label>Name <input id="name" required placeholder="Product name" /></label>
         <label>Unit price <input id="price" type="number" min="0" step="0.01" required /></label>
         <label>Minimum stock <input id="min" type="number" min="0" value="5" required /></label>
-        <button type="submit">Add product</button>
+        <div class="form-actions">
+          <button type="submit" id="form-submit">Add product</button>
+          <button type="button" id="form-cancel" class="secondary" hidden>Cancel</button>
+        </div>
       </form>
 
       <form id="move-form" class="panel">

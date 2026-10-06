@@ -4,6 +4,7 @@
 const STORAGE_KEY = "stock-control-data";
 
 const state = loadState();
+let editingSku = null; // SKU of the product being edited (null = creating)
 
 function loadState() {
   try {
@@ -59,7 +60,10 @@ function renderInventory() {
           <td>${p.qty}</td>
           <td>${p.min}</td>
           <td><span class="badge ${low ? "low" : "ok"}">${low ? "Low stock" : "OK"}</span></td>
-          <td><button class="link" data-remove="${escape(p.sku)}">Remove</button></td>
+          <td class="actions">
+            <button class="link edit" data-edit="${escape(p.sku)}">Edit</button>
+            <button class="link" data-remove="${escape(p.sku)}">Remove</button>
+          </td>
         </tr>`;
       }).join("")
     : `<tr><td colspan="7" class="empty">No products found.</td></tr>`;
@@ -92,22 +96,54 @@ function escape(str) {
 $("product-form").addEventListener("submit", (e) => {
   e.preventDefault();
   const sku = $("sku").value.trim().toUpperCase();
-  if (state.products.some((p) => p.sku === sku)) {
-    alert(`SKU ${sku} already exists.`);
-    return;
-  }
-  state.products.push({
-    sku,
+  const data = {
     name: $("name").value.trim(),
     price: Number($("price").value),
-    qty: 0,
     min: Number($("min").value),
-  });
+  };
+
+  if (editingSku) {
+    const product = state.products.find((p) => p.sku === editingSku);
+    Object.assign(product, data);
+  } else {
+    if (state.products.some((p) => p.sku === sku)) {
+      alert(`SKU ${sku} already exists.`);
+      return;
+    }
+    state.products.push({ sku, qty: 0, ...data });
+  }
+
   saveState();
-  e.target.reset();
-  $("min").value = 5;
+  resetProductForm();
   render();
 });
+
+function startEditing(sku) {
+  const product = state.products.find((p) => p.sku === sku);
+  if (!product) return;
+  editingSku = sku;
+  $("sku").value = product.sku;
+  $("sku").disabled = true; // SKU is the product key and can't change
+  $("name").value = product.name;
+  $("price").value = product.price;
+  $("min").value = product.min;
+  $("form-title").textContent = `Edit product ${sku}`;
+  $("form-submit").textContent = "Save changes";
+  $("form-cancel").hidden = false;
+  $("name").focus();
+}
+
+function resetProductForm() {
+  editingSku = null;
+  $("product-form").reset();
+  $("sku").disabled = false;
+  $("min").value = 5;
+  $("form-title").textContent = "New product";
+  $("form-submit").textContent = "Add product";
+  $("form-cancel").hidden = true;
+}
+
+$("form-cancel").addEventListener("click", resetProductForm);
 
 $("move-form").addEventListener("submit", (e) => {
   e.preventDefault();
@@ -132,9 +168,11 @@ $("move-form").addEventListener("submit", (e) => {
 });
 
 $("inventory").addEventListener("click", (e) => {
+  if (e.target.dataset.edit) return startEditing(e.target.dataset.edit);
   const sku = e.target.dataset.remove;
   if (!sku || !confirm(`Remove product ${sku}?`)) return;
   state.products = state.products.filter((p) => p.sku !== sku);
+  if (editingSku === sku) resetProductForm();
   saveState();
   render();
 });
