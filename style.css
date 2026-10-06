@@ -1,25 +1,50 @@
 :root {
-  --bg: #f4f6fa;
+  --bg: #f3f6f4;
   --panel: #ffffff;
-  --text: #1f2937;
-  --muted: #6b7280;
-  --primary: #2563eb;
-  --danger: #dc2626;
-  --ok: #16a34a;
-  --border: #e5e7eb;
+  --text: #1c2b22;
+  --muted: #5f6f65;
+  --primary: #14532d;
+  --primary-hover: #166534;
+  --topbar: #0f3d22;
+  --accent: #14532d; /* text/links in the primary color */
+  --danger: #b91c1c;
+  --ok: #15803d;
+  --border: #dfe7e2;
+  --ok-bg: #dcfce7;
+  --low-bg: #fee2e2;
+  color-scheme: light;
+}
+
+/* Dark mode: applied by the theme toggle (data-theme="dark" on <html>) */
+:root[data-theme="dark"] {
+  --bg: #0c1610;
+  --panel: #132119;
+  --text: #e3ede6;
+  --muted: #94a89b;
+  --primary: #22814f;
+  --primary-hover: #2a9a5f;
+  --topbar: #0a2416;
+  --accent: #6ee7a0;
+  --danger: #f87171;
+  --ok: #4ade80;
+  --border: #22362a;
+  --ok-bg: #143823;
+  --low-bg: #3b1515;
+  color-scheme: dark;
 }
 
 * { box-sizing: border-box; }
 
 body {
   margin: 0;
+  transition: background .2s, color .2s;
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   background: var(--bg);
   color: var(--text);
 }
 
 .topbar {
-  background: var(--primary);
+  background: var(--topbar);
   color: #fff;
   padding: 16px 24px;
   display: flex;
@@ -48,6 +73,7 @@ body {
 
 form label { display: grid; gap: 4px; margin-bottom: 12px; font-size: .9rem; color: var(--muted); }
 input, select {
+  background: var(--panel);
   padding: 9px 10px;
   border: 1px solid var(--border);
   border-radius: 6px;
@@ -65,11 +91,15 @@ button {
   font: inherit;
   cursor: pointer;
 }
-button:hover { filter: brightness(1.08); }
-button.secondary { background: #fff; color: var(--primary); border: 1px solid var(--primary); }
-button.ghost { margin-left: auto; background: transparent; border: 1px solid rgba(255,255,255,.6); padding: 6px 12px; font-size: .85rem; }
+button:hover { background: var(--primary-hover); }
+button.secondary { background: var(--panel); color: var(--accent); border: 1px solid var(--accent); }
+button.ghost { background: transparent; border: 1px solid rgba(255,255,255,.6); padding: 6px 12px; font-size: .85rem; }
+button.secondary:hover { background: var(--bg); }
+button.ghost:hover { background: rgba(255,255,255,.12); }
 button.link { background: none; color: var(--danger); padding: 4px 6px; }
-button.link.edit { color: var(--primary); }
+button.link:hover { background: none; text-decoration: underline; }
+.topbar-actions { margin-left: auto; display: flex; gap: 8px; }
+button.link.edit { color: var(--accent); }
 .actions { white-space: nowrap; }
 .form-actions { display: flex; gap: 8px; }
 input:disabled { background: var(--bg); color: var(--muted); }
@@ -80,8 +110,8 @@ th { color: var(--muted); font-weight: 600; }
 .panel { overflow-x: auto; }
 
 .badge { padding: 3px 8px; border-radius: 999px; font-size: .75rem; font-weight: 600; }
-.badge.ok { background: #dcfce7; color: var(--ok); }
-.badge.low { background: #fee2e2; color: var(--danger); }
+.badge.ok { background: var(--ok-bg); color: var(--ok); }
+.badge.low { background: var(--low-bg); color: var(--danger); }
 
 .msg { min-height: 1.2em; margin: 8px 0 0; font-size: .85rem; }
 .msg.error { color: var(--danger); }

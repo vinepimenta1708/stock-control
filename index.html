@@ -5,12 +5,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Stock Control | Mini ERP</title>
   <link rel="stylesheet" href="style.css" />
+  <script>
+    // Apply the saved theme before the page paints (avoids a flash of the wrong theme)
+    try {
+      const saved = localStorage.getItem("stock-control-theme");
+      const dark = saved ? saved === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+      document.documentElement.dataset.theme = dark ? "dark" : "light";
+    } catch (e) { /* ignore */ }
+  </script>
 </head>
 <body>
   <header class="topbar">
     <h1>📦 Stock Control</h1>
     <span class="subtitle">A mini ERP inventory module</span>
-    <button id="reset" class="ghost" title="Restore the sample data">Reset demo data</button>
+    <div class="topbar-actions">
+      <button id="theme-toggle" class="ghost" aria-label="Toggle dark mode"></button>
+      <button id="reset" class="ghost" title="Restore the sample data">Reset demo data</button>
+    </div>
   </header>
 
   <main class="container">

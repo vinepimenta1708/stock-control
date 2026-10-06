@@ -235,4 +235,20 @@ $("reset").addEventListener("click", () => {
   render();
 });
 
+// --- Theme (light / dark) ---
+
+const THEME_KEY = "stock-control-theme";
+
+function applyTheme(theme) {
+  document.documentElement.dataset.theme = theme;
+  $("theme-toggle").textContent = theme === "dark" ? "☀️ Light" : "🌙 Dark";
+}
+
+$("theme-toggle").addEventListener("click", () => {
+  const next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+  applyTheme(next);
+  try { localStorage.setItem(THEME_KEY, next); } catch (e) { /* ignore */ }
+});
+
+applyTheme(document.documentElement.dataset.theme || "light");
 render();
