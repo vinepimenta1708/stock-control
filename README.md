@@ -6,11 +6,13 @@ A lightweight inventory module inspired by ERP systems, built with **HTML, CSS a
 
 ## Features
 
-- Product registration (SKU, name, unit price, minimum stock)
+- Product registration and editing (SKU, name, unit price, minimum stock)
 - Stock entries and exits with validation (no negative stock)
 - Dashboard with total products, items, stock value and low-stock alerts
 - Search by SKU or name
-- Movement history with CSV export
+- Stock level chart with minimum stock markers
+- Movement history filtered by product and type, with CSV export
+- One-click reset to sample data
 - Data saved in the browser with `localStorage`
 - Responsive layout
 
@@ -30,10 +32,11 @@ git clone https://github.com/vinepimenta1708/stock-control.git
 
 ## Roadmap
 
-- [ ] Edit products
-- [ ] Filter history by product and date
+- [x] Edit products
+- [x] Filter history by product and type
+- [x] Stock level chart
+- [ ] Filter history by date range
 - [ ] Suppliers and purchase orders
-- [ ] Charts for stock movement
 - [ ] Back-end with a database (Node.js + SQL)
 
 ## Author
