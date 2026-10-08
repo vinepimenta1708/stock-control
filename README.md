@@ -31,6 +31,7 @@ The whole app state is a single object saved to `localStorage`:
 
 ```js
 {
+  version: 2,   // bumped when the data format or sample data changes
   products: [{ sku, name, price, qty, min }],
   history:  [{ sku, type: "in" | "out", qty, date }]
 }

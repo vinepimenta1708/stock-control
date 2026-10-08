@@ -2,6 +2,9 @@
 // Data is saved in the browser (localStorage).
 
 const STORAGE_KEY = "stock-control-data";
+// Bump when the data format or the sample data changes: saved data from an
+// older version is replaced by the new sample data on the next visit.
+const DATA_VERSION = 2;
 
 let state = loadState();
 let editingSku = null; // SKU of the product being edited (null = creating)
@@ -9,7 +12,7 @@ let editingSku = null; // SKU of the product being edited (null = creating)
 function loadState() {
   try {
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
-    if (saved) return saved;
+    if (saved && saved.version === DATA_VERSION) return saved;
   } catch (e) { /* ignore */ }
   return sampleData();
 }
@@ -70,7 +73,7 @@ function sampleData() {
   // Chronological order, whatever order the movements were listed in
   history.sort((a, b) => a.date.localeCompare(b.date));
 
-  return { products, history };
+  return { version: DATA_VERSION, products, history };
 }
 
 function saveState() {
