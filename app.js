@@ -26,6 +26,14 @@ function sampleData() {
     { sku: "PRD-006", name: "Noise-Cancelling Headset", price: 129.0, min: 4 },
     { sku: "PRD-007", name: "HDMI Cable 2m", price: 12.0, min: 8 },
     { sku: "PRD-008", name: "Webcam 1080p", price: 59.9, min: 5 },
+    { sku: "PRD-009", name: "A4 Copy Paper (500 sheets)", price: 6.5, min: 20 },
+    { sku: "PRD-010", name: "Laptop 14\"", price: 899.0, min: 2 },
+    { sku: "PRD-011", name: "Phone Charger 20W", price: 19.9, min: 10 },
+    { sku: "PRD-012", name: "Ballpoint Pens (box of 50)", price: 8.9, min: 6 },
+    { sku: "PRD-013", name: "Toner Cartridge", price: 74.9, min: 3 },
+    { sku: "PRD-014", name: "Power Strip (6 outlets)", price: 22.5, min: 5 },
+    { sku: "PRD-015", name: "Sticky Notes (pack)", price: 4.2, min: 15 },
+    { sku: "PRD-016", name: "Whiteboard Markers (4-pack)", price: 7.8, min: 6 },
   ].map((p) => ({ ...p, qty: 0 }));
 
   // [days ago, sku, type, quantity]
@@ -38,6 +46,15 @@ function sampleData() {
     [8, "PRD-005", "out", 7], [7, "PRD-002", "out", 11], [6, "PRD-008", "out", 8],
     [5, "PRD-001", "out", 6], [4, "PRD-004", "out", 3], [3, "PRD-006", "out", 3],
     [2, "PRD-007", "in", 10], [1, "PRD-005", "out", 4], [0, "PRD-001", "in", 10],
+    [26, "PRD-009", "in", 100], [20, "PRD-009", "out", 25], [14, "PRD-009", "out", 30],
+    [9, "PRD-009", "out", 20], [3, "PRD-009", "out", 12],
+    [23, "PRD-010", "in", 7], [16, "PRD-010", "out", 2], [11, "PRD-010", "out", 1], [2, "PRD-010", "out", 1],
+    [22, "PRD-011", "in", 30], [18, "PRD-011", "out", 8], [10, "PRD-011", "out", 6], [4, "PRD-011", "out", 5],
+    [25, "PRD-012", "in", 15], [15, "PRD-012", "out", 4], [6, "PRD-012", "out", 3],
+    [21, "PRD-013", "in", 6], [13, "PRD-013", "out", 2], [5, "PRD-013", "out", 2],
+    [20, "PRD-014", "in", 12], [12, "PRD-014", "out", 3], [1, "PRD-014", "out", 2],
+    [24, "PRD-015", "in", 40], [17, "PRD-015", "out", 10], [8, "PRD-015", "out", 12], [2, "PRD-015", "out", 9],
+    [22, "PRD-016", "in", 16], [11, "PRD-016", "out", 5], [3, "PRD-016", "out", 4],
   ];
 
   const history = moves.map(([daysAgo, sku, type, qty], i) => {
@@ -49,6 +66,9 @@ function sampleData() {
     product.qty += type === "in" ? qty : -qty;
     return { sku, type, qty, date: date.toISOString() };
   });
+
+  // Chronological order, whatever order the movements were listed in
+  history.sort((a, b) => a.date.localeCompare(b.date));
 
   return { products, history };
 }
