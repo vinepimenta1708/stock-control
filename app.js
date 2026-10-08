@@ -14,16 +14,43 @@ function loadState() {
   return sampleData();
 }
 
-// Sample data so the app isn't empty on first visit
+// Sample data so the app isn't empty on first visit.
+// Quantities are derived from the movements, so stock and history always match.
 function sampleData() {
-  return {
-    products: [
-      { sku: "PRD-001", name: "Wireless Mouse", price: 25.9, qty: 18, min: 5 },
-      { sku: "PRD-002", name: "USB-C Cable", price: 9.5, qty: 3, min: 10 },
-      { sku: "PRD-003", name: "Mechanical Keyboard", price: 89.0, qty: 7, min: 4 },
-    ],
-    history: [],
-  };
+  const products = [
+    { sku: "PRD-001", name: "Wireless Mouse", price: 25.9, min: 5 },
+    { sku: "PRD-002", name: "USB-C Cable", price: 9.5, min: 10 },
+    { sku: "PRD-003", name: "Mechanical Keyboard", price: 89.0, min: 4 },
+    { sku: "PRD-004", name: "27\" Monitor", price: 219.0, min: 3 },
+    { sku: "PRD-005", name: "Laptop Stand", price: 34.9, min: 6 },
+    { sku: "PRD-006", name: "Noise-Cancelling Headset", price: 129.0, min: 4 },
+    { sku: "PRD-007", name: "HDMI Cable 2m", price: 12.0, min: 8 },
+    { sku: "PRD-008", name: "Webcam 1080p", price: 59.9, min: 5 },
+  ].map((p) => ({ ...p, qty: 0 }));
+
+  // [days ago, sku, type, quantity]
+  const moves = [
+    [27, "PRD-001", "in", 30], [27, "PRD-002", "in", 40], [26, "PRD-003", "in", 12],
+    [26, "PRD-004", "in", 8], [25, "PRD-005", "in", 18], [25, "PRD-006", "in", 12],
+    [24, "PRD-007", "in", 20], [24, "PRD-008", "in", 12], [21, "PRD-002", "out", 14],
+    [19, "PRD-001", "out", 6], [17, "PRD-004", "out", 3], [15, "PRD-002", "out", 12],
+    [13, "PRD-006", "out", 4], [12, "PRD-007", "out", 9], [10, "PRD-003", "out", 5],
+    [8, "PRD-005", "out", 7], [7, "PRD-002", "out", 11], [6, "PRD-008", "out", 8],
+    [5, "PRD-001", "out", 6], [4, "PRD-004", "out", 3], [3, "PRD-006", "out", 3],
+    [2, "PRD-007", "in", 10], [1, "PRD-005", "out", 4], [0, "PRD-001", "in", 10],
+  ];
+
+  const history = moves.map(([daysAgo, sku, type, qty], i) => {
+    const date = new Date();
+    date.setDate(date.getDate() - daysAgo);
+    date.setHours(9 + (i % 8), (i * 17) % 60, 0, 0);
+    if (date > Date.now()) date.setTime(Date.now() - 30 * 60 * 1000); // never in the future
+    const product = products.find((p) => p.sku === sku);
+    product.qty += type === "in" ? qty : -qty;
+    return { sku, type, qty, date: date.toISOString() };
+  });
+
+  return { products, history };
 }
 
 function saveState() {
@@ -107,18 +134,38 @@ function renderChart() {
 function filteredHistory() {
   const sku = $("history-product").value;
   const type = $("history-type").value;
-  return state.history.filter((h) => (!sku || h.sku === sku) && (!type || h.type === type));
+  // Date inputs give "YYYY-MM-DD"; compare against the movement's local date
+  const from = $("history-from").value;
+  const to = $("history-to").value;
+  return state.history.filter((h) => {
+    const day = localDay(h.date);
+    return (!sku || h.sku === sku) && (!type || h.type === type) && (!from || day >= from) && (!to || day <= to);
+  });
 }
+
+function localDay(iso) {
+  const d = new Date(iso);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
+// Name of a product (empty if it was removed after the movement)
+const productName = (sku) => state.products.find((p) => p.sku === sku)?.name ?? "";
 
 function renderHistory() {
   const items = filteredHistory();
   $("history").innerHTML = items.length
     ? items.slice().reverse().map((h) => `
         <li>
-          <span class="${h.type}">${h.type === "in" ? "+" : "−"}${h.qty} · ${escape(h.sku)}</span>
+          <span><b class="${h.type}">${h.type === "in" ? "+" : "−"}${h.qty}</b> ${escape(h.sku)} <span class="muted">${escape(productName(h.sku))}</span></span>
           <time>${new Date(h.date).toLocaleString()}</time>
         </li>`).join("")
     : `<li class="empty">No movements yet.</li>`;
+}
+
+// Quote a CSV field when it has a comma, quote or line break (RFC 4180)
+function csvField(value) {
+  const str = String(value);
+  return /[",\n]/.test(str) ? `"${str.replace(/"/g, '""')}"` : str;
 }
 
 function escape(str) {
@@ -216,10 +263,15 @@ $("inventory").addEventListener("click", (e) => {
 $("search").addEventListener("input", renderInventory);
 $("history-product").addEventListener("change", renderHistory);
 $("history-type").addEventListener("change", renderHistory);
+$("history-from").addEventListener("change", renderHistory);
+$("history-to").addEventListener("change", renderHistory);
 
 $("export").addEventListener("click", () => {
-  const lines = [["date", "sku", "type", "quantity"], ...filteredHistory().map((h) => [h.date, h.sku, h.type, h.qty])];
-  const csv = lines.map((l) => l.join(",")).join("\n");
+  const lines = [
+    ["date", "sku", "product", "type", "quantity"],
+    ...filteredHistory().map((h) => [h.date, h.sku, productName(h.sku), h.type, h.qty]),
+  ];
+  const csv = lines.map((l) => l.map(csvField).join(",")).join("\n");
   const link = document.createElement("a");
   link.href = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
   link.download = "stock-movements.csv";
